@@ -1,22 +1,24 @@
 -- load class library by rxi
-Object = require "libraries/classic"
 require 'drawShape'
 require 'initTests'
 
 font = love.graphics.newFont('assets/fonts/battlenet.ttf',16)
 
 -- game window settings
-local canvasWidth = 320
-local canvasHeight = 240
-local canvasScale = 3
+canvasWidth = 960
+canvasHeight = 720
+canvasScale = 1
 
 -- game info
 local GameTime = 0
 local GameScore = 0
 
+
+
 -- Run when game is started
 function love.load()
 	
+	Object = require "libraries/classic"
 	-- load all object files in the 'objects' folder
 	local object_files = {}
 	recursiveEnumerate('objects', object_files)
@@ -32,7 +34,6 @@ function love.load()
 	
 	stations = {}
 	trains = {}
-	passengers = {}
 	routes = {}
 	
 	initTests()
@@ -72,10 +73,15 @@ function love.draw()
 	for i = 1, #trains do
 		trains[i]:draw()
 	end
+
+	-- draw routes
+	for i = 1, #routes do
+		routes[i]:draw()
+	end
 	
 	--show our game timer and score
-	love.graphics.print("game time: " .. GameTime, 160, 8)
-	love.graphics.print("game score: " .. GameScore, 160, 24)
+	love.graphics.print("game time: " .. GameTime, canvasWidth-300, 8)
+	love.graphics.print("game score: " .. GameScore, canvasWidth-300, 24)
 
 	-- reset drawing to the screen
 	love.graphics.setCanvas()

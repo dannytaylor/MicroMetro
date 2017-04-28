@@ -2,8 +2,8 @@ Station = Object:extend()
 
 -- if a station is full for this time you lose
 Station.loseTimerMax = 10
-Station.size = 8
-Station.passengerSize = 3
+Station.size = 16
+Station.passengerSize = 8
 
 function Station:new(x,y, type)
   -- only 1 train can load/unload passengers at a time
@@ -24,7 +24,10 @@ function Station:new(x,y, type)
 
   self.loseTimer = 0
 
+end
 
+function Station:addPassenger(type)
+  table.insert(self.passengers,Passenger:new(type))
 end
 
 function Station:update(dt)
@@ -47,8 +50,6 @@ function Station:draw()
   drawShape(self.x,self.y, self.size,self.type)
   -- show passengers below station
   for i=1, #self.passengers do
-    drawShape(self.x - 20 + i*5, self.y + self.size + 2, self.passengerSize,self.passengers[i].type)
+    drawShape(self.x + (i - #self.passengers/2)*12 - self.passengerSize/2 - 1, self.y + self.size + 8, self.passengerSize,self.passengers[i].type)
   end
 end
-
-return Station
