@@ -42,6 +42,10 @@ end
 
 -- Game loop; updates every frame
 function love.update(dt)
+	-- global mouse coords available to everything
+	mx = love.mouse.getX()
+	my = love.mouse.getY()
+
 	--update all stations
 	for i = 1, #stations do
 		stations[i]:update(dt)
@@ -52,8 +56,14 @@ function love.update(dt)
 		trains[i]:update(dt)
 	end
 
+	for i = 1, #routes do
+		routes[i]:update(dt)
+	end
+
 	--update game time
 	GameTime = GameTime + 1
+
+
 end
 
 

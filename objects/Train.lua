@@ -63,7 +63,6 @@ function Train:update(dt)
 		else
 			self.x, self.y = newX, newY
 		end
-
 	end
 end
 
