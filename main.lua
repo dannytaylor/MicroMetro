@@ -12,7 +12,8 @@ function love.load()
 
   -- set canvas resolution
   main_canvas = love.graphics.newCanvas(320, 240)
-  -- no aliasing
+	
+	-- no aliasing
   main_canvas:setFilter('nearest','nearest')
 
   stations = {}
