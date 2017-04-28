@@ -1,3 +1,2 @@
-local Station = Object:extend()
+Route = Object:extend()
 
-return Station
