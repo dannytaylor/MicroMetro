@@ -1,4 +1,5 @@
 -- initialize some test stations and trains to move around a basic random route
+-- test commit
 function initTests ()
 	-- set up 5 initial stations
 	-- connect in order to new route
