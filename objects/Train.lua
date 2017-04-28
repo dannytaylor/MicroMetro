@@ -5,14 +5,18 @@ Train.height = 1
 Train.passengerSize = 8
 
 -- constants same for all trains
-Train.speed = 1
+Train.speed = 4
 Train.loadSpeed = 1
 
 function Train:new(x,y)
 	self.currentStation = nil
 	self.nextStation = nil
 	self.previousStation = nil
-	self.line = nil
+	self.route = nil
+	-- forwards or backwards in route
+	self.routeDir = 1
+	-- if route is a closed loop
+	self.routeLoop = false
 
 	self.x, self.y = x, y
 
@@ -24,17 +28,42 @@ function Train:new(x,y)
 	self.height = (self.passengerSize + 2)*3
 end
 
-function Train:addPassenger(type)
-	table.insert(self.passengers,Passenger:new(type))
-end
-
 function Train:update(dt)
-	--test movement
-	self.x = self.x + self.speed
-	if self.x > canvasWidth-200 then
-	self.speed = -1
-	elseif self.x < 0 then
-		self.speed = 1
+	--test movement, basic along a route
+	if self.currentStation then
+		self.x = self.route.stations[self.currentStation].x
+		self.y = self.route.stations[self.currentStation].y
+		-- move train out of station and current -> previous station
+		self.previousStation = self.currentStation
+		self.nextStation = self.currentStation + self.routeDir
+		self.currentStation = nil
+	-- if not at a current station then train is in transit
+	else
+		-- move along line to next station
+		-- move unit vector towards next station
+		local targetX = self.route.stations[self.nextStation].x
+		local targetY = self.route.stations[self.nextStation].y 
+		local xDis = targetX - self.route.stations[self.previousStation].x
+		local yDis = targetY - self.route.stations[self.previousStation].y
+		local absDis = math.sqrt(math.pow(xDis,2)+ math.pow(yDis,2))
+
+		local newX, newY = self.x + xDis*self.speed/absDis,self.y + yDis*self.speed/absDis
+		-- if moved past next station, next -> current
+		-- if moving x positive and past next station
+		if (xDis > 0 and newX>targetX) or (xDis< 0 and newX<targetX ) then
+			-- move train to next station
+			self.currentStation = self.nextStation
+
+			-- if currentStation is last in the route change route direction
+			if self.currentStation == #self.route.stations then
+				self.routeDir = -1
+			elseif self.currentStation == 1 then
+				self.routeDir = 1
+			end
+		else
+			self.x, self.y = newX, newY
+		end
+
 	end
 end
 

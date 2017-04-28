@@ -80,8 +80,14 @@ function love.draw()
 	end
 	
 	--show our game timer and score
-	love.graphics.print("game time: " .. GameTime, canvasWidth-300, 8)
-	love.graphics.print("game score: " .. GameScore, canvasWidth-300, 24)
+	love.graphics.print("game time: " .. GameTime, canvasWidth - 300, 8)
+	love.graphics.print("game score: " .. GameScore, canvasWidth - 300, 24)
+
+	-- debug train station targets
+	love.graphics.print("previous station: " .. trains[1].previousStation, canvasWidth - 300, 40)
+	-- love.graphics.print("current station: " .. trains[1].currentStation, canvasWidth - 300, 56)
+	love.graphics.print("next station: " .. trains[1].nextStation, canvasWidth - 300, 62)
+
 
 	-- reset drawing to the screen
 	love.graphics.setCanvas()
