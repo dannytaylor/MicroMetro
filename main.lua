@@ -1,4 +1,4 @@
--- load class library by rxi
+
 require 'drawShape'
 require 'initTests'
 
@@ -17,7 +17,7 @@ local GameScore = 0
 
 -- Run when game is started
 function love.load()
-	
+	-- load class library by rxi
 	Object = require "libraries/classic"
 	-- load all object files in the 'objects' folder
 	local object_files = {}
