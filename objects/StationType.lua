@@ -15,22 +15,21 @@ StationType = {
 	-- ...
 }
 
-PossibleStationTypes = { StationType.Square, StationType.Triangle, StationType.Circle }
+ActiveStationTypes = { StationType.Square, StationType.Triangle, StationType.Circle }
 
 -- Pick a random station type out of the possible types
-function GetRandomStationType(possibleStationTypes)
-	targetStationType = possibleStationTypes[math.random(#possibleStationTypes)]
+function GetRandomStationType()
+	targetStationType = ActiveStationTypes[math.random(#ActiveStationTypes)]
 	return targetStationType
 end
 
 -- Return this module as a table so we don't throw globals all over the place
 return {
 	StationType = StationType,
-	PossibleStationTypes = PossibleStationTypes,
+	ActiveStationTypes = ActiveStationTypes,
 	GetRandomStationType = GetRandomStationType,
 }
 
 
 
-	
 

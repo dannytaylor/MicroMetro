@@ -8,7 +8,7 @@ function initTests ()
 	-- shape types as numbers to use random
 	routes[1] = Route()
 	for i = 1, 5 do
-		table.insert(stations, Station(love.math.random(0, canvasWidth - 200), love.math.random(0, canvasHeight - 200), StationType.GetRandomStationType(StationType.PossibleStationTypes)))
+		table.insert(stations, Station(love.math.random(0, canvasWidth - 200), love.math.random(0, canvasHeight - 200), StationType.GetRandomStationType()))
 		-- add all global stations to this route
 		routes[1].stations[i] = stations[i]
 		-- add random # of passengers to a station
