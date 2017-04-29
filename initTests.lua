@@ -1,3 +1,5 @@
+local StationType = require "objects/StationType"
+
 -- initialize some test stations and trains to move around a basic random route
 -- test commit
 function initTests ()
@@ -6,7 +8,7 @@ function initTests ()
 	-- shape types as numbers to use random
 	routes[1] = Route()
 	for i = 1, 5 do
-		table.insert(stations, Station(love.math.random(0, canvasWidth-200), love.math.random(0, canvasHeight-200), love.math.random(1,3)))
+		table.insert(stations, Station(love.math.random(0, canvasWidth - 200), love.math.random(0, canvasHeight - 200), StationType.GetRandomStationType(StationType.PossibleStationTypes)))
 		-- add all global stations to this route
 		routes[1].stations[i] = stations[i]
 		-- add random # of passengers to a station
