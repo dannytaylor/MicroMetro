@@ -32,9 +32,11 @@ end
 
 function Station:removePassenger(passType)
 	for i=#self.passengers, 1, -1 do
-		if self.passengers[i].type == passType then
-			self.passengers[i] = nil
-		break end
+		if self.passengers[i] then
+			if self.passengers[i].type == passType then
+				self.passengers[i] = nil
+			break end
+		end
 	end
 end
 

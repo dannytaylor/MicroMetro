@@ -133,15 +133,17 @@ function Train:load()
 	end
 	-- for each passenger at the station
 	for i=#self.route.stations[self.currentStation].passengers, 1, -1 do
-		local pType = self.route.stations[self.currentStation].passengers[i].type
-		-- check if this train goes to that station
-		for key,value in pairs(upcomingTypes) do
-			-- if the passenger finds a match
-			if pType == value then
-				-- remove that passenger from the station and add to the train
-				self.route.stations[self.currentStation]:removePassenger(value)
-				self.passengers[#self.passengers+1] = Passenger(value)
-			break end
+		if self.route.stations[self.currentStation].passengers[i] then
+			local pType = self.route.stations[self.currentStation].passengers[i].type
+			-- check if this train goes to that station
+			for key,value in pairs(upcomingTypes) do
+				-- if the passenger finds a match
+				if pType == value then
+					-- remove that passenger from the station and add to the train
+					self.route.stations[self.currentStation]:removePassenger(value)
+					self.passengers[#self.passengers+1] = Passenger(value)
+				break end
+			end
 		end
 	end
 end
