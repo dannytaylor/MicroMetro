@@ -2,8 +2,8 @@ Route = Object:extend()
 Route.mSize = 32
 
 function Route:new()
-	self.color = nil
-	self.stations= {}
+	self.color     = nil
+	self.stations  = {}
 	self.mouseOver = {}
 	self.mouseDown = {}
 end

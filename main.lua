@@ -5,12 +5,12 @@ require 'initTests'
 font = love.graphics.newFont('assets/fonts/battlenet.ttf',16)
 
 -- game window settings
-canvasWidth = 960
+canvasWidth  = 960
 canvasHeight = 720
-canvasScale = 1
+canvasScale  = 1
 
 -- game info
-local GameTime = 0
+local GameTime  = 0
 local GameScore = 0
 
 
