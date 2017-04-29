@@ -10,8 +10,8 @@ canvasHeight = 720
 canvasScale  = 1
 
 -- game info
-local GameTime  = 0
-local GameScore = 0
+GameTime  = 0
+GameScore = 0
 
 
 
@@ -93,10 +93,10 @@ function love.draw()
 	love.graphics.print("game time: " .. GameTime, canvasWidth - 300, 8)
 	love.graphics.print("game score: " .. GameScore, canvasWidth - 300, 24)
 
-	-- debug train station targets
-	love.graphics.print("previous station: " .. trains[1].previousStation, canvasWidth - 300, 40)
-	-- love.graphics.print("current station: " .. trains[1].currentStation, canvasWidth - 300, 56)
-	love.graphics.print("next station: " .. trains[1].nextStation, canvasWidth - 300, 62)
+	-- -- debug train station targets
+	-- love.graphics.print("previous station: " .. trains[1].previousStation, canvasWidth - 300, 40)
+	-- -- love.graphics.print("current station: " .. trains[1].currentStation, canvasWidth - 300, 56)
+	-- love.graphics.print("next station: " .. trains[1].nextStation, canvasWidth - 300, 62)
 
 
 	-- reset drawing to the screen
