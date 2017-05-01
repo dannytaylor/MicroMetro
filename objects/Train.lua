@@ -3,6 +3,7 @@ Train = Object:extend()
 Train.width = 1
 Train.height = 1
 Train.passengerSize = 8
+Train.MaxPassengers = 6
 
 -- constants same for all trains
 Train.speed = 4
@@ -133,6 +134,10 @@ function Train:load()
 	end
 	-- for each passenger at the station
 	for i=#self.route.stations[self.currentStation].passengers, 1, -1 do
+		
+		-- Do we have room?
+		if #self.passengers >= Train.MaxPassengers then break end
+		
 		if self.route.stations[self.currentStation].passengers[i] then
 			local pType = self.route.stations[self.currentStation].passengers[i].type
 			-- check if this train goes to that station

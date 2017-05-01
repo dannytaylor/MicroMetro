@@ -35,7 +35,6 @@ function Station:removePassenger(passType)
 		local currentPassenger = self.passengers[i]
 		if currentPassenger then
 			if currentPassenger.type == passType then
-				print(currentPassenger)
 				self.passengers[i] = nil
 				return currentPassenger
 			end

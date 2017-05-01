@@ -34,8 +34,8 @@ function love.load()
 	main_canvas:setFilter('nearest', 'nearest')
 	
 	-- Lets try creating a PlayController
-	local targetMapPath = "/maps/map1.lua"
-	local playController = PlayController(targetMapPath, nil)
+	local targetMapPath = "assets/maps/map1.lua"
+	local playController = PlayController(targetMapPath)
 	print(playController.map.mapName)
 	
 	stations = {}
