@@ -1,17 +1,25 @@
 local mode = 'fill'
 
-function drawShape (x,y,size, shape, color)
+local function DrawSquareStationType(x, y, size, color)
+	love.graphics.rectangle(mode, x - size / 2, y - size / 2, size, size)
+end
 
-	-- square
-	if shape == 1 then
-		love.graphics.rectangle(mode, x-size/2, y-size/2, size, size)
+local function DrawTriangleStationType(x, y, size, color)
+	love.graphics.ellipse(mode, x, y, size / 4, size / 2)
+end
 
-	-- circle
-	elseif shape == 2 then
-		love.graphics.circle(mode, x, y, size/2)
+local function DrawCircleStationType(x, y, size, color)
+	love.graphics.circle(mode, x, y, size / 2)
+end
 
-	-- ellipse
-	elseif shape == 3 then
-		love.graphics.ellipse(mode,x,y,size/4,size/2)
-	end
+local StationTypeDrawFunctions = {}
+StationTypeDrawFunctions[StationType.CommonStations.Square] = DrawSquareStationType
+StationTypeDrawFunctions[StationType.CommonStations.Triangle] = DrawTriangleStationType
+StationTypeDrawFunctions[StationType.CommonStations.Circle] = DrawCircleStationType
+
+function drawShape(x, y, size, shape, color)
+	
+	-- Call the appropriate function
+	local targetDrawFunction = StationTypeDrawFunctions[shape]
+	targetDrawFunction(x, y, size, color)
 end

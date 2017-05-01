@@ -1,5 +1,5 @@
 
-require 'drawShape'
+
 require 'initTests'
 
 font = love.graphics.newFont('assets/fonts/battlenet.ttf',16)
@@ -23,6 +23,7 @@ function love.load()
 	local object_files = {}
 	recursiveEnumerate('objects', object_files)
 	requireFiles(object_files)
+	require 'drawShape'
 	
 	-- only using one font so set it at load
 	love.graphics.setFont(font)
@@ -31,6 +32,11 @@ function love.load()
 	
 	-- no aliasing when scaling window
 	main_canvas:setFilter('nearest', 'nearest')
+	
+	-- Lets try creating a PlayController
+	local targetMapPath = "/maps/map1.lua"
+	local playController = PlayController(targetMapPath, nil)
+	print(playController.map.mapName)
 	
 	stations = {}
 	trains = {}

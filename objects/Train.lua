@@ -140,8 +140,8 @@ function Train:load()
 				-- if the passenger finds a match
 				if pType == value then
 					-- remove that passenger from the station and add to the train
-					self.route.stations[self.currentStation]:removePassenger(value)
-					self.passengers[#self.passengers+1] = Passenger(value)
+					local removedPassenger = self.route.stations[self.currentStation]:removePassenger(value)
+					self.passengers[#self.passengers + 1] = removedPassenger
 				break end
 			end
 		end
