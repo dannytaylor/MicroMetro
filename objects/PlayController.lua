@@ -23,7 +23,11 @@ function PlayController:new(targetMapPath, difficulty)
 	-- Create our grid
 	self.playGrid = PlayGrid(self.map)
 	
-	
+	-- Track all of the current game objects
+	self.stations = {}
+	self.passengers = {}
+	self.trains = {}
+	self.routes = {}
 	
 	--Return the new object
 	return PlayController
@@ -39,4 +43,9 @@ function PlayController:LoadMap(targetMapPath)
 	
 	-- And we return the loaded map
 	return loadedMap
+end
+
+function PlayController:draw()
+	-- Draw the grid
+	self.playGrid:draw()
 end

@@ -10,14 +10,48 @@
 
 Map = Object:extend()
 
-function Map:new(mapName, mapWidth, mapHeight, impassableTiles, backgroundImagePath)
-	-- Store this information
-	self.mapName = mapName -- The name of the map
-	self.mapWidth = mapWidth -- The width of the grid
-	self.mapHeight = mapHeight -- The height of the grid
-	self.impassableTiles = impassableTiles -- A set of all tiles that are impassable (water, etc)
-	self.backgroundImagePath = backgroundImagePath -- The image to display for the background
+function Map:new(mapName, mapDescription, mapImagePath)
 	
+	-- Store the information of this map
+	self.mapName = mapName
+	self.mapDescription = mapDescription
+	self.mapImagePath = mapImagePath
+	
+	-- Parse out map information based on the input image
+	local mapInformation = Map:ParseMapImage(self.mapImagePath)
+	self.mapImage = mapInformation.ImageData
+	self.mapWidth = mapInformation.Width
+	self.mapHeight = mapInformation.Height
+
 	-- Return the completed object
 	return Map
+end
+
+function Map:ParseMapImage(mapImagePath)
+	-- We need to load the image path
+	local mapImage = love.image.newImageData(mapImagePath)
+	
+	--Get the height and width
+	local mapHeight = mapImage:getHeight()
+	local mapWidth = mapImage:getWidth()
+	
+	--Collect this information
+	local mapInformation = {
+		ImageData = mapImage,
+		Height = mapHeight,
+		Width = mapWidth
+	}
+	
+	--Return what we got
+	return mapInformation
+end
+
+function Map:isWaterTile(tileX, tileY)
+	--We need to check if we are on a water tile
+	--This is simply if the tile is not BLACK!
+	local red, green, blue, alpha = self.mapImage:getPixel(tileX, tileY)
+	
+	--They better be black!
+	if red == 0 and green == 0 and blue == 0 then return false end
+	return true
 end

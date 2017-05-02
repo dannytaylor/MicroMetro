@@ -5,8 +5,6 @@ require 'initTests'
 font = love.graphics.newFont('assets/fonts/battlenet.ttf',16)
 
 -- game window settings
-canvasWidth  = 960
-canvasHeight = 720
 canvasScale  = 1
 
 -- game info
@@ -27,17 +25,25 @@ function love.load()
 	
 	-- only using one font so set it at load
 	love.graphics.setFont(font)
-	-- set canvas resolution
-	main_canvas = love.graphics.newCanvas(canvasWidth, canvasHeight)
 	
-	-- no aliasing when scaling window
-	main_canvas:setFilter('nearest', 'nearest')
+	
+	
 	
 	-- Lets try creating a PlayController
-	local targetMapPath = "assets/maps/map1.lua"
-	local playController = PlayController(targetMapPath)
-	print(playController.map.mapName)
+	local targetMapPath = "assets/maps/Dantopia.lua"
+	playController = PlayController(targetMapPath)
 	
+	-- set canvas resolution
+	canvasWidth, canvasHeight = playController.map.mapWidth * PlayGrid.GridSize, playController.map.mapHeight * PlayGrid.GridSize
+	print(playController.map.mapWidth, playController.map.mapHeight)
+	print(cameraX, cameraY)
+	main_canvas = love.graphics.newCanvas(canvasWidth, canvasHeight)
+	love.window.setMode(canvasWidth, canvasHeight)
+	
+	-- no aliasing when scaling window
+	--main_canvas:setFilter('nearest', 'nearest')
+
+
 	stations = {}
 	trains = {}
 	routes = {}
@@ -109,6 +115,9 @@ function love.draw()
 	love.graphics.setCanvas()
 	-- draw whats been put on main_canvas at x3 scale
 	love.graphics.draw(main_canvas, 0, 0, 0, canvasScale, canvasScale)
+	
+	--Draw the play controller
+	playController:draw()
 end
 
 
