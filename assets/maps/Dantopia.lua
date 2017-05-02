@@ -8,8 +8,6 @@
 
 --Import and create a map
 
-return Map("Test Map Name",
-	10,
-	10,
-	{},
-	"")
+return Map("Dantopia",
+	"Daniel's really cool map",
+	"/assets/maps/Dantopia.png")

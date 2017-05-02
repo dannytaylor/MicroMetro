@@ -9,23 +9,38 @@
 -- This represents the currently active grid. It is initialized based on the currently loaded map.
 
 PlayGrid = Object:extend()
-PlayGrid.GridSize = 30 --30px square
+PlayGrid.GridSize = 16 --How many px square
 
 function PlayGrid:new(sourceMap)
 	--Create a set of empty tiles
+	self.sourceMap = sourceMap
 	self.tiles = {}
-	for column = 1, sourceMap.mapWidth do
+	for column = 0, self.sourceMap.mapWidth - 1 do
 		self.tiles[column] = {}
-		for row = 1, sourceMap.mapHeight do
+		for row = 0, self.sourceMap.mapHeight - 1 do
 			self.tiles[column][row] = {}
+			
+			-- Was this a water tile? Add one if so
+			if self.sourceMap:isWaterTile(column, row) then
+				local newWaterTile = WaterTile(column, row)
+				table.insert(self.tiles[column][row], newWaterTile)
+			end
 		end
-	end
-	
-	-- Fill in the tiles with water
-	for impassableX, impassableY in pairs(sourceMap.impassableTiles) do
-		self.tiles[impassableX][impassableY].insert(WaterTile(impassableX, impassableY))
 	end
 	
 	-- Return the completed object
 	return PlayGrid
+end
+
+function PlayGrid:draw()
+	-- Go through each tile
+	for column = 0, self.sourceMap.mapWidth - 1 do
+		for row = 0, self.sourceMap.mapHeight - 1 do
+			-- Get everything in that tile
+			for tileElementIndex, tileElement in pairs(self.tiles[column][row]) do
+				-- Tell it to draw
+				tileElement:draw()
+			end
+		end
+	end
 end
