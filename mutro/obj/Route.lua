@@ -6,16 +6,19 @@
 -- a route can be a loop
 -- a route will have a unique colour
 -- a route has at least 1 point
-local Route = Object:extend()
-local nodes = {}
-local loop = false -- must have at least 3 nodes to loop
-local draft = Draft('fill')
+Route = Object:extend()
+
+function Route:new(node1,node2,type) -- type would be colour in Mini Metro
+	self.loop = false -- must have at least 3 nodes to loop
+	self.rNodes = {node1,node2}
+	self.type = type
+end
 
 function Route:addEdge(line)
-	-- if route is empty
-	if not #nodes then nodes[1]={line[1],line[2]}
-	else nodes[#nodes] = {line[1],line[2]} end
-	nodes[#nodes+1] = {line[3],line[4]}
+	-- if route has no rNodes
+	if not #self.rNodes then self.rNodes[1]={line[1],line[2]}
+	else self.rNodes[#self.rNodes] = {line[1],line[2]} end
+	self.rNodes[#self.rNodes+1] = {line[3],line[4]}
 
 
 	-- assume you click somewhere on the route to change it
@@ -34,9 +37,17 @@ function Route:addEdge(line)
 	-- if you grab a route on an edge then prev and next are defined
 end
 
+function Route:removeNode(x,y)
+	for i,node in ipairs(self.rNodes) do
+		if x == node.x and y == node.y then
+			table.remove(self.rNodes,node)
+		break end
+	end
+end
+
 -- maybe call on any route change/ ie Route:check
 -- function Route:update()
--- 	if #nodes < 1 or not #nodes then
+-- 	if #rNodes < 1 or not #rNodes then
 -- 		Route:delete()
 -- 	end
 -- end
@@ -44,12 +55,12 @@ end
 function Route:draw()
 	-- change draw color
 	-- for each edge
-	for i=1, #nodes do
-		local x1    = (nodes[i-1][1] - 0.5)*tileSize
-		local y1    = (nodes[i-1][2] - 0.5)*tileSize	 -- grid pos to canvas pos
-		local x2	= (nodes[i][1]	 - 0.5)*tileSize
-		local y2    = (nodes[i][2]	 - 0.5)*tileSize	
-		love.graphics.line(x1,y1,x2,y2)
+	for i=2, #self.rNodes do
+		local x1    = (self.rNodes[i-1][1] - 0.5)*tileSize
+		local y1    = (self.rNodes[i-1][2] - 0.5)*tileSize
+		local x2	= (self.rNodes[i][1]	 - 0.5)*tileSize
+		local y2    = (self.rNodes[i][2]	 - 0.5)*tileSize	
+		drawToPoint(x1,y1,x2,y2)
 	end
 		-- 	draw edge; can have 1 or 2 segments at 45 angle
 	-- for start and end node

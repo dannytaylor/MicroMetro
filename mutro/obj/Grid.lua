@@ -10,6 +10,7 @@ local numStations
 local bufferSize = 2
 local stations = {}
 
+
 function Grid:new(mapImage)
 	-- init all tile states to empty/0
 	numStations = 0
@@ -86,9 +87,10 @@ function Grid:addStation()
 			end
 		end
 	end
+	-- if spawn area has room
 	if spawnSpace then
 		local tempNum = numStations
-		while tempNum == numStations do
+		while tempNum == numStations do -- retry finding a spawn tile until one is found
 			-- random test point within allowable spawn area
 			local testX = lume.round(love.math.random(spawnX+1,spawnX+spawnW))
 			local testY = lume.round(love.math.random(spawnY+1,spawnY+spawnH))
@@ -116,6 +118,8 @@ function Grid:addStation()
 						end
 					end
 				end
+				nodes[#nodes+1] = Node(testX,testY,1,{}) -- for now station type is '1', no routes will service newly created nodes
+				
 			end
 		end
 		else print('no room for more stations')
