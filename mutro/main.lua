@@ -185,7 +185,7 @@ function getRandomType() -- will be more complicated for more types
 	return love.math.random(1,3)
 end
 
-function drawToPoint(x1,y1,x2,y2)
+function drawToPoint(x1,y1,x2,y2,color)
 	-- angled portion will be for the shorter segment
 	local dX = x2 - x1
 	local dY = y2 - y1

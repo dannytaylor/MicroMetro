@@ -26,9 +26,9 @@ function Map:new(name) -- map file name
 	end
 
 	local waterColor = 255,255,255,255 -- the color of water indicator on map image
-	for x = 1,  self.width-1 do -- initialize map state from loaded image
-	    for y = 1, self.height-1 do
-	        if (waterColor == mapImage:getPixel( x, y )) then
+	for x = 1,  self.width do -- initialize map state from loaded image
+	    for y = 1, self.height do
+	        if (waterColor == mapImage:getPixel( x-1, y-1 )) then
 	        	self.tileState[x][y] = 1
 	        end
 	    end
