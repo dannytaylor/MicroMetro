@@ -56,22 +56,19 @@ function love.update(dt)
 		if dragState then
 			-- if we mouse over a node
 			local testNode = getNode(gX,gY)
-			local sameNode = dragNode.x == gX and dragNode.y == gY
-			if testNode then -- if we've dragged over a different node 
-				if not sameNode then
-					if not testNode:hasRoute(dragRoute.id) then  -- and the current route isn't already on this new node
-						testNode:addRoute(dragRoute) -- add the route to the new Node
-						dragRoute:addNode(testNode) -- add the new node to the current route
-						dragNode = testNode -- set the new node as the new drag node
-					end-- if the new node isn't already a part of the dragging route
+			local sameNode = dragNode.x == gX and dragNode.y == gY -- true if dragnode == mouse over
+			if testNode then 			-- if we've dragged over a node
+				if not testNode.dragNode then 	-- if the node is different from the dragnode
+					testNode.dragNode = true		-- add the route to the new Node
+					dragRoute:addNode(testNode) 				-- add the new node to the current route
+					dragNode = testNode 						-- set the new node as the new drag node
+				-- if the new node isn't already a part of the dragging route
 				-- else -- if same node
 				-- 	if #dragRoute.nodes > 1 and then -- if we have > 1 nodes in our dragging route
 				-- 		-- and it is last node in route
 
-				end
 
-
-
+				end 
 			end
 		end
 
@@ -94,7 +91,7 @@ function love.draw()
 		-- draw all dragging stuff
 		if dragState then -- if in a dragging state
 			-- draw line from dragNode to mouse
-			drawToPoint((dragNode.x-0.5)*tileSize,(dragNode.y-0.5)*tileSize,wX,wY)
+			drawToPoint((dragNode.x-0.5)*tileSize,(dragNode.y-0.5)*tileSize,wX,wY,dragRoute.color)
 		end
 
 		love.graphics.setColor(255, 000, 255, 255)
@@ -132,9 +129,12 @@ end
 
 function love.mousereleased(x,y,button,istouch)
 	if button == 1 then
-		if dragState then -- if we release the mouse not on a station then
-			dragState = false -- stop the drag action
+		if dragState then -- stop the drag action
+			dragState = false 
 			dragNode = nil
+			for i,n in ipairs(dragRoute.nodes) do
+				n.dragNode = false
+			end
 			dragRoute = nil
 			if #allRoutes[#allRoutes].nodes < 2 then
 				allRoutes[#allRoutes] = nil -- delete last route if we left it with only 1 node
@@ -189,7 +189,7 @@ function drawToPoint(x1,y1,x2,y2,color)
 	-- angled portion will be for the shorter segment
 	local dX = x2 - x1
 	local dY = y2 - y1
-	love.graphics.setColor(255, 000, 255)
+	love.graphics.setColor(color['r'],color['g'],color['b'])
 	love.graphics.setLineWidth(2)
 
 	-- setup cases; will simplify cases later

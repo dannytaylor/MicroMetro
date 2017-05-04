@@ -141,3 +141,10 @@ function requireFiles(files)
 		require(file)
 	end
 end
+
+function love.keypressed(key) -- key bindings
+
+	if key == 'escape' then
+		love.event.quit()
+	end
+end

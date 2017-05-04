@@ -11,6 +11,7 @@ function Node:new(type) -- will create a new station
 	self.neighbors = {} -- will have no neighbors without a route
 	self.x, self.y = Node:getSpawnPoint() -- needs to find an allowable spawn point
 	if not self.x then return nil end -- if no spawn points left return nil, no node created
+	self.dragNode = false
 end
 
 function Node:draw()
