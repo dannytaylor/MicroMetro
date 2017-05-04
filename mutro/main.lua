@@ -1,110 +1,196 @@
--- todo
--- logic for adding routes removing
-
 -- main.lua
+
+-- load libraries
 lume = require 'lib/lume'    		-- basic helper functions   https://github.com/rxi/lume/
 Object = require 'lib/classic'  	-- simple class module    	https://github.com/rxi/classic/
 Draft = require 'lib/draft'   		-- draw shapes			    https://github.com/pelevesque/draft
 Camera = require 'lib/hump/camera'	-- camera implementation	http://hump.readthedocs.io/en/latest/camera.html
-local draft = Draft('fill')
 
-Grid = require 'obj/Grid'   		-- my simple game grid type
+draft = Draft('fill')
 
-require 'obj/Route'   		-- for routes
+-- require our objects
+require 'obj/Map'   		-- map game is played on
 require 'obj/Node'			-- simple station class thing
+require 'obj/Route'			
 
-routes = {}         						-- list of all game routes
-nodes = {} 									-- list of all stations
+-- STATIC globals
+tileSize = 8 -- static tileSize
+zoomInit = 4
+zoomMax = 1
 
-tileSize = 8
-mapW = 128
-mapH = 72
-camZoomMax = 4
-camZoomMin = 1
-canvasScale = 3
+debug = true -- to draw some debugging info
 
-local dragNode = nil
-local dragRoute = 1
-
+-- start our game
 function love.load()
+	-- setup game window
+
+	windowIcon = love.image.newImageData('assets/windowIcon.png')
+	cursor = love.graphics.newImage('assets/cursor.png')
 	love.window.setTitle('micro metro')
-	
-	-- load water info
-	local mapImage = love.image.newImageData('assets/map1.png')
-
-	-- graphics and game sizing init
-	canvasW = mapW*tileSize
-	canvasH = mapH*tileSize
-	
+	love.window.setIcon(windowIcon)
 	love.graphics.setDefaultFilter( 'nearest', 'nearest' )
-	love.window.setMode(1280, 720,{resizable=true, vsync=false, minwidth=400, minheight=300})
+	love.window.setMode(1280, 720,{resizable=true, vsync=false, minwidth=480, minheight=320})
 
-	camera = Camera(canvasW/2,canvasH/2,camZoomMax)
+	love.mouse.setVisible(false) -- hide cursor to use custom cursor
+	love.mouse.setGrabbed(true) -- confine mouse to window
 
-	gameGrid = Grid(mapImage) -- make game grid of this size
+	-- init the game state
+	GameState = 2 -- start game in map for now
+
+	currentMap = Map('map1')
+	currentMap:init()
 
 end
 
 function love.update(dt)
-	-- debug in http://127.0.0.1:8000/ 'F1'
-	require("lib/lovebird").update()
+	require("lib/lovebird").update()-- debug in http://127.0.0.1:8000/ 'F1'
+	mX,mY = love.mouse.getPosition() -- mouse position
 
- 	camera:zoom(0.9999)
+	-- game logic loop
+	if GameState == 1 then -- do main menu stuff
+	elseif GameState == 2 then -- do game stuff
+		wX,wY = camera:worldCoords(mX,mY) -- mouse pos in world coords
+		gX,gY = math.floor(wX/tileSize)+1, math.floor(wY/tileSize)+1 -- mouse in grid coords
 
-	-- mouse coord adjustments from cam to world coords
-	mX, mY = camera:worldCoords(love.mouse.getPosition())
-	
-	-- mouse in grid coords
-	gX = math.floor(mX/tileSize)+1
-	gY = math.floor(mY/tileSize)+1
-	
-	mouseLogic()
-	print(#nodes)
+		-- route dragging logic
+		if dragState then
+			-- if we mouse over a node
+			local testNode = getNode(gX,gY)
+			local sameNode = dragNode.x == gX and dragNode.y == gY
+			if testNode then -- if we've dragged over a different node 
+				if not sameNode then
+					if not testNode:hasRoute(dragRoute.id) then  -- and the current route isn't already on this new node
+						testNode:addRoute(dragRoute) -- add the route to the new Node
+						dragRoute:addNode(testNode) -- add the new node to the current route
+						dragNode = testNode -- set the new node as the new drag node
+					end-- if the new node isn't already a part of the dragging route
+				-- else -- if same node
+				-- 	if #dragRoute.nodes > 1 and then -- if we have > 1 nodes in our dragging route
+				-- 		-- and it is last node in route
+
+				end
+
+
+
+			end
+		end
+
+		-- camera zoom 'fake tween '
+		if camera.scale then -- zoom to set value
+			if camera.scale > zoomTo then
+				camera:zoom(0.9999)
+			end
+		end
+	end
 end
 
 function love.draw()
-	camera:attach()
+	-- draw loop
 
+	if GameState==2 then
+		camera:attach() -- start drawing world elements
+		currentMap:draw()
 
-	gameGrid:draw()
-	if mouseInBounds and gameGrid:isStation(gX,gY) then
-		-- draw some highlighting square
-		if dragNode then love.graphics.setColor(255, 0, 0, 255)
-		else love.graphics.setColor(255, 255, 000, 255) end
-		draft:rectangle((gX-0.5)*tileSize,(gY-0.5)*tileSize,tileSize,tileSize)
-		love.graphics.setColor(255, 255, 255, 255)
+		-- draw all dragging stuff
+		if dragState then -- if in a dragging state
+			-- draw line from dragNode to mouse
+			drawToPoint((dragNode.x-0.5)*tileSize,(dragNode.y-0.5)*tileSize,wX,wY)
+		end
+
+		love.graphics.setColor(255, 000, 255, 255)
+		for i,r in ipairs(allRoutes) do -- draw all routes
+			r:draw()
+		end
+		-- draw all nodes
+		love.graphics.setColor(255,255,255,255)
+		for i,node in ipairs(allNodes) do
+			node:draw()
+		end
+
+		-- draw all trains
+
+		camera:detach()
+		-- draw UI stuff
 	end
 
-	if dragNode then -- if we're dragging then draw from dragnode to mouse
-		drawToPoint((dragNode.x-0.5)*tileSize,(dragNode.y-0.5)*tileSize,mX,mY)
-	end
-
-	-- if there are routes to draw
-	if #routes then
-		for i,route in ipairs(routes) do route:draw() end
-	end
-
-	debugGrid()
-	camera:detach()
+	love.graphics.draw(cursor, love.mouse.getX(), love.mouse.getY()) -- draw custom cursor
 
 end
 
-function debugGrid()
-	love.graphics.setColor(255,255,255,40)
-	for i=1, mapW-1 do
-		draft:line({i*tileSize,0,i*tileSize,canvasH})
+function love.mousepressed(x,y,button,istouch)
+	if button == 1 then -- left click
+		local testNode = getNode(gX,gY) -- get the node clicked, nil if didn't click on node
+		if testNode then -- and if there are available routes to add TODO
+			-- and if testNode doesn't already have one of the available routes
+			dragState = true
+			dragNode = testNode -- set the drag node to the one at mouse location
+			dragRoute = Route(nextRoute,dragNode) -- make a new route
+			allRoutes[#allRoutes+1] = dragRoute -- add the newly created node to our list of all nodes
+		end
 	end
-	for j=1, mapH-1 do
-		draft:line({0,j*tileSize,canvasW,j*tileSize})
+end
+
+function love.mousereleased(x,y,button,istouch)
+	if button == 1 then
+		if dragState then -- if we release the mouse not on a station then
+			dragState = false -- stop the drag action
+			dragNode = nil
+			dragRoute = nil
+			if #allRoutes[#allRoutes].nodes < 2 then
+				allRoutes[#allRoutes] = nil -- delete last route if we left it with only 1 node
+			end
+		end
 	end
-	love.graphics.setColor(255,255,255,255)
+end
+
+function getNode(x,y) -- gets the node at coordinates if there is one
+	for i,node in ipairs(allNodes) do
+		if node.x == x and node.y == y then return node end
+	end
+	return nil
+end
+
+function love.keypressed(key) -- key bindings
+
+	if key == 'escape' then
+		love.event.quit()
+	elseif key == 'f1' then -- open debug window
+		love.system.openURL( 'http://127.0.0.1:8000/' )
+
+	elseif GameState == 2 then
+		if key == 'q' then
+			camera:zoom(1.20)
+			zoomTo = zoomTo+0.2
+		elseif key == 'e' then
+			zoomTo = zoomTo -0.5
+		elseif key == 'w' then
+			camera:move(0,-10)
+		elseif key == 'a' then
+			camera:move(-10,0)
+		elseif key == 's' then
+			camera:move(0,10)
+		elseif key == 'd' then
+			camera:move(10,0)
+		elseif key == '1' then
+			currentMap:increaseSpawn()
+		elseif key == '2' then
+			currentMap:increaseSpawn(-1)
+		elseif key == '3' then
+			allNodes[#allNodes+1] = Node()
+		end
+	end
+end
+
+function getRandomType() -- will be more complicated for more types
+	return love.math.random(1,3)
 end
 
 function drawToPoint(x1,y1,x2,y2)
 	-- angled portion will be for the shorter segment
 	local dX = x2 - x1
 	local dY = y2 - y1
-	love.graphics.setColor(255, 255, 255)
+	love.graphics.setColor(255, 000, 255)
+	love.graphics.setLineWidth(2)
 
 	-- setup cases; will simplify cases later
 	
@@ -141,96 +227,3 @@ function drawToPoint(x1,y1,x2,y2)
 	end
 end
 
-function love.keypressed(key)
-
-	if key == 'escape' then
-		love.event.quit()
-	-- open debug window
-	elseif key == 'f1' then
-		love.system.openURL( 'http://127.0.0.1:8000/' )
-
-	elseif key == '1' then
-		gameGrid:increaseSpawn(1)
-	elseif key == '2' then
-		gameGrid:increaseSpawn(-1)
-	elseif key == '3' then
-		gameGrid.addStation()
-	elseif key == 'q' then
-		camera:zoom(1.20)
-	elseif key == 'e' then
-		camera:zoom(0.80)
-	elseif key == 'w' then
-		camera:move(0,-10)
-	elseif key == 'a' then
-		camera:move(-10,0)
-	elseif key == 's' then
-		camera:move(0,10)
-	elseif key == 'd' then
-		camera:move(10,0)
-	end
-end
-
-
-function mouseLogic()
-	-- assume mouse out of grid bounds for starters
-	mouseInBounds = false--otherwise we're referencing non-existent grid points
-	if mX > 0 and mX < canvasW and mY>0 and mY< canvasH then mouseInBounds = true end
-
-	if mouseInBounds and gameGrid:isStation(gX,gY) then
-		if dragNode then-- if we are in a dragging state
-			-- and the moused over station isn't our drag station
-			if dragNode.x~=gX or dragNode.y~=gY then
-				-- if new node is already on dragNode's route
-				if dragNode:hasRoute(dragRoute) then 
-					-- remove if last node
-					local lastX = routes[dragRoute].rNodes[#routes[dragRoute].rNodes].x
-					local lastY = routes[dragRoute].rNodes[#routes[dragRoute].rNodes].y
-					if lastX == gX and lastY == gY then
-						routes[dragRoute]:removeNode(gX,gY)
-					end
-				else
-				end
-				-- remove if last node
-				-- check if newNode on route
-				
-
-				-- create a route between dragNode and new node
-				local line = {dragNode.x,dragNode.y,gX,gY} -- x1,y1,x2,y2
-				if not routes[1] then routes[1] = Route() end
-
-				routes[1]:addEdge(line)
-				
-				-- set new node as dragNode
-				dragNode = getNode(gX,gY)
-			end
-		else -- if there is no current drag node
-			-- and you've clicked a station
-			if love.mouse.isDown(1) then
-				-- set the moused over node as the dragNode
-				dragNode = getNode(gX,gY)
-				-- add the current route type(only '1') to dragNode
-				dragRoute = 1
-				-- assume if we're clicking a station not an edge we're making a route from scratched
-			end
-		end
-	end
-
-	-- if a drag has been started
-	if dragNode then
-		-- cancel drag if mouse released
-		if not love.mouse.isDown(1) then
-			dragNode = nil
-		end
-	end
-end
-
-function getNode(x,y) -- gets whatever node is at x,y if there
-	if #nodes then
-		for i,testNode in ipairs(nodes) do
-			if testNode.x == x and testNode.y == y then
-				return testNode
-			end
-		end
-	end
-	return nil
-end
