@@ -1,0 +1,12 @@
+-- globals.lua
+
+TILE_SIZE = 3
+WINDOW_W, WINDOW_H = TILE_SIZE*64, TILE_SIZE*40
+WINDOW_SCALE = 8
+
+bSize = 2
+
+DEBUG = true
+
+NODES = {}
+ROUTES = {}
